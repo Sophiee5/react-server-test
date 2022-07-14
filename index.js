@@ -1,18 +1,34 @@
 const express = require('express')
 const app = express()
-const port = 5005
+const port = 5006
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const config = require('./config/key');
-const { auth } = require('./middleware/auth');
-const { User } = require("./models/User");
-
-//application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: true}));
+const config = require('./server/config/key');
+const { auth } = require('./server/middleware/auth');
+const { User } = require("./server/models/User");
+const { Client } = require('pg');
 
 //application/json 분석해서 가져올 수 있게
 app.use(bodyParser.json());
 app.use(cookieParser());
+//application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended: true}));
+
+const client = new Client({
+    user : 'mmuser',
+    host : 'localhost',
+    database : 'test',
+    password : 'testpass',
+    port : 5432,
+});
+
+client.connect().then(() => console.log('Postgres 연결됨')).catch(err => console.log(err));
+
+client.query('SELECT * FROM CENTER', (err, res) => {
+    console.log(err, res);
+    client.end()
+});
+
 
 const mongoose = require('mongoose')
 mongoose.connect(config.mongoURI, {
@@ -36,7 +52,7 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
     //요청된 이메일을 데이터베이스에서 있는지 찾기
-    User.findOne({ email: req.body.email }, (err, user) => {
+    User.findOne({ email: req.body.loginId }, (err, user) => {
         if(!user) {
             return res.json({
                 loginSuccess: false,
@@ -74,9 +90,8 @@ app.get('/api/users/auth', auth, (req, res) => {
         _id: req.user._id,
         isAdmin: req.user.role === 0 ? false : true,
         isAuth: true,
-        email: req.user.email,
+        email: req.user.loginId,
         name: req.user.name,
-        lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image
     })
@@ -96,4 +111,4 @@ app.get('/api/users/logout', auth, (req, res) => {
 
 
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`포트실행 on port ${port}!`))

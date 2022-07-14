@@ -5,35 +5,13 @@ const jwt = require('jsonwebtoken');
 
 
 const userSchema = mongoose.Schema({
-    name: {
-        type: String,
-        //maxlength: 50
-    },
-    email: {
-        type: String,
-        //공백 없애주는 기능
-        trim: true,
-        unique: 1
-    },
-    password: {
-        type: String,
-        //maxlength: 8
-    },
-    lastname: {
-        type: String,
-        //maxlength: 50
-    },
-    role: {
-        type: Number,
-        default: 0
-    },
+    name: { type: String },
+    loginId: { type: String, trim: true },
+    password: { type: String },
+    role: { type: Boolean, default: false },
     image: String,
-    token: {
-        type: String
-    },
-    tokenExp: {
-        type: Number
-    }
+    token: { type: String },
+    tokenExp: { type: Number }
 })
 //user 정보를 저장하기 전에 실행하는 코드 -> 비밀번호 암호화
 userSchema.pre('save', function(next){

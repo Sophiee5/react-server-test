@@ -1,25 +1,25 @@
 const express = require('express')
 const app = express()
 const port = 5006
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const config = require('./server/config/key');
-const { auth } = require('./server/middleware/auth');
-const { User } = require("./server/models/User");
+const config = require('./config/key');
+const { auth } = require('./middleware/auth');
+const { User } = require("./models/User");
 const { Client } = require('pg');
 
-//application/json 분석해서 가져올 수 있게
-app.use(bodyParser.json());
-app.use(cookieParser());
 //application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: true}));
+
+//application/json 분석해서 가져올 수 있게
+app.use(express.json());
+app.use(cookieParser());
 
 const client = new Client({
-    user : 'mmuser',
-    host : 'localhost',
-    database : 'test',
-    password : 'testpass',
-    port : 5432,
+    user : 'neurozen',
+    host : '115.95.135.171',
+    database : 'memo_ai',
+    password : 'sbfhdkdl1!',
+    port : 10902,
 });
 
 client.connect().then(() => console.log('Postgres 연결됨')).catch(err => console.log(err));
